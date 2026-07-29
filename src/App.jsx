@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import Login from "./Components/Login.jsx";
-import ChatInterface from "./Components/ChatInterface.jsx";
+import Login from "./Components/Login";
+import ChatInterface from "./Components/ChatInterface";
 import { Sparkles } from "lucide-react";
 
 // Initialize Supabase Client using environment variables
