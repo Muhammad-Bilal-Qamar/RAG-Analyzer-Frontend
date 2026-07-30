@@ -47,7 +47,6 @@ export default function DocumentManager({
         <div>
           <input
             type="file"
-            multiple
             ref={fileInputRef}
             className="hidden"
             accept=".pdf"
@@ -57,7 +56,7 @@ export default function DocumentManager({
             onClick={() => fileInputRef.current.click()}
             className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-xl text-xs font-medium transition shadow-sm"
           >
-            <Upload size={14} /> Upload Knowledge PDF
+            <Upload size={14} /> Upload Knowledge PDF (1 file)
           </button>
         </div>
       </div>
