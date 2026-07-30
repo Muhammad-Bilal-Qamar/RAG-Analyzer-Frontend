@@ -15,6 +15,15 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Supabase appends #access_token=...&type=signup (or type=recovery) to the
+    // redirect URL after email confirmation. onAuthStateChange below will
+    // pick up the session automatically, but we clean the hash out of the
+    // URL bar so the user doesn't see a long token string, and so a page
+    // refresh doesn't try to re-process a stale hash.
+    if (window.location.hash.includes("access_token")) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
     // Check initial active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
