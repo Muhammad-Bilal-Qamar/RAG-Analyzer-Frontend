@@ -193,53 +193,61 @@ export default function ChatInterface({ session, supabase }) {
     const files = e.target.files;
     if (!files.length) return;
 
+    if (files.length > 1) {
+      alert("Only one document can be uploaded at a time. Please select a single PDF.");
+      e.target.value = "";
+      return;
+    }
+
+    const file = files[0];
     const token = session?.access_token;
-    for (let file of files) {
-      const formData = new FormData();
-      formData.append("file", file);
-      try {
-        if (token) {
-          const res = await axios.post(
-            `${API_BASE}/documents/upload`,
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-              },
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      if (token) {
+        const res = await axios.post(
+          `${API_BASE}/documents/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
             },
-          );
+          },
+        );
 
-          const docId = res.data.document_id;
-          const newDoc = {
-            id: docId,
-            file_name: file.name,
-            status: "Processing",
-          };
-          setGlobalDocuments((prev) => [newDoc, ...prev]);
+        const docId = res.data.document_id;
+        const newDoc = {
+          id: docId,
+          file_name: file.name,
+          status: "Processing",
+        };
+        setGlobalDocuments((prev) => [newDoc, ...prev]);
 
-          const updatedBoundDocs = [...(activeChat?.boundDocIds || []), docId];
-          await axios.put(
-            `${API_BASE}/chats/${activeChatId}`,
-            { bound_doc_ids: updatedBoundDocs },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
+        const updatedBoundDocs = [...(activeChat?.boundDocIds || []), docId];
+        await axios.put(
+          `${API_BASE}/chats/${activeChatId}`,
+          { bound_doc_ids: updatedBoundDocs },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
-          setChats((prev) =>
-            prev.map((c) =>
-              c.id === activeChatId
-                ? { ...c, boundDocIds: updatedBoundDocs }
-                : c,
-            ),
-          );
-          setActiveDocId(docId);
-          fetchDocuments();
-        }
-      } catch (err) {
-        console.error("Upload failed", err);
+        setChats((prev) =>
+          prev.map((c) =>
+            c.id === activeChatId
+              ? { ...c, boundDocIds: updatedBoundDocs }
+              : c,
+          ),
+        );
+        setActiveDocId(docId);
+        fetchDocuments();
       }
+    } catch (err) {
+      console.error("Upload failed", err);
+    } finally {
+      // Reset the input so selecting the same file again re-triggers onChange
+      e.target.value = "";
     }
   };
 
