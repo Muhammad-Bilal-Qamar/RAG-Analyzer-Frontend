@@ -24,7 +24,13 @@ export default function Login({ supabase }) {
     try {
       let response;
       if (isRegister) {
-        response = await supabase.auth.signUp({ email, password });
+        response = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
       } else {
         response = await supabase.auth.signInWithPassword({ email, password });
       }
@@ -74,7 +80,7 @@ export default function Login({ supabase }) {
                 : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            <LogIn size={14} /> Sign In
+            <LogIn size={14} /> Log In
           </button>
           <button
             type="button"
